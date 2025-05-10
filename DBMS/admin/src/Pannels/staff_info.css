@@ -1,0 +1,77 @@
+/* staff_info.css */
+
+.staff-info-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .staff-info-container h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #3498db;
+    font-size: 26px;
+  }
+  
+  .staff-info-container p {
+    margin: 12px 0;
+    padding: 10px;
+    font-size: 16px;
+    color: #34495e;
+    border-bottom: 1px solid #f1f1f1;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .staff-info-container p strong {
+    width: 150px;
+    display: inline-block;
+    color: #2c3e50;
+    font-weight: 600;
+  }
+  
+  .loading-message,
+  .error-message {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #7f8c8d;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 30px auto;
+    max-width: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .error-message {
+    color: #e74c3c;
+    background-color: #fadbd8;
+  }
+  
+  .active-status {
+    color: #27ae60;
+    font-weight: 600;
+  }
+  
+  .inactive-status {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .staff-info-container {
+      padding: 15px;
+      margin: 20px 15px;
+    }
+    
+    .staff-info-container p strong {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+  }

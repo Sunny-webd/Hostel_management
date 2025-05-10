@@ -1,0 +1,207 @@
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import assets from "../assets/assets.js";
+
+const Sidebar = () => {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const activePage = useLocation().pathname.split("/")[1] || "dashboard";
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) return;
+      try {
+        const res = await axios.get("http://localhost:2001/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.data && res.data.user) {
+          setUser(res.data.user);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        localStorage.removeItem("token");
+        setToken(null);
+        navigate("/login");
+      }
+    };
+    fetchUser();
+  }, [token, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      // First clear all stored data
+      localStorage.clear(); // Clear all localStorage items, not just token
+      sessionStorage.clear(); // Clear any session storage
+      
+      // Reset states
+      setToken(null);
+      setUser(null);
+      
+      // Force redirect to login page
+      window.location.href = '/login'; // This will force a full page reload and redirection
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Even if there's an error, force redirect
+      window.location.href = '/login';
+    }
+  };
+
+  const menuItems = [
+    { name: "Dashboard", path: "dashboard", icon: assets.dashboard },
+    { name: "Room Booking", path: "room-booking", icon: assets.logo },
+    { name: "Report Issue", path: "report", icon: assets.maintanance },
+    { name: "Report Status", path: "track-report", icon: assets.maintanance },
+  ];
+
+  return (
+    <div className={`flex flex-col h-screen bg-white border-r border-gray-200 shadow-lg
+                    transition-all duration-300 ease-in-out
+                    ${isCollapsed ? 'w-20' : 'w-72 '}`}>
+      {/* Header/Logo Section */}
+      <div className="relative">
+        <div className="flex items-center gap-4 p-3.5 bg-white border-b border-gray-200">
+          <div className="flex-shrink-0">
+            <img 
+              className="w-12 h-12 rounded-xl shadow-lg" 
+              src={assets.logo} 
+              alt="logo" 
+            />
+          </div>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-indigo-600">
+                IITP HMS
+              </h1>
+              <p className="text-sm text-blue-600">
+                Student Portal
+              </p>
+            </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="absolute -right-4 top-1/2 transform -translate-y-1/2
+                     w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center
+                     hover:bg-gray-50 transition-colors duration-200"
+          >
+            <svg
+              className={`w-4 h-4 text-gray-600 transform transition-transform duration-300 ${
+                isCollapsed ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* User Profile Section - Now Clickable */}
+      {user && (
+        <div 
+          onClick={() => navigate('/profile')}
+          className={`px-4 py-6 border-b border-gray-200 ${isCollapsed ? 'text-center' : ''}
+                     cursor-pointer hover:bg-gray-50 transition-colors duration-200`}
+        >
+          <div className="flex items-center gap-4">
+            <img 
+              className="w-12 h-12 rounded-xl shadow-md transform transition-transform duration-200 hover:scale-105" 
+              src={assets.user} 
+              alt="user" 
+            />
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user.full_name}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user.role}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Menu */}
+      <nav className="flex-1 overflow-y-auto py-4">
+        <div className="px-3 space-y-1">
+          {menuItems.map(({ name, path, icon }) => (
+            <NavLink
+              key={path}
+              to={`/${path}`}
+              className={({ isActive }) => `
+                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                ${isActive 
+                  ? 'bg-blue-50 text-blue-600' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }
+                ${isCollapsed ? 'justify-center' : ''}
+              `}
+            >
+              <div className="flex-shrink-0">
+                <img 
+                  className={`w-6 h-6 rounded-lg ${isCollapsed ? 'mx-auto' : ''}`} 
+                  src={icon} 
+                  alt={name} 
+                />
+              </div>
+              {!isCollapsed && (
+                <span className="text-sm font-medium truncate">
+                  {name}
+                </span>
+              )}
+              {!isCollapsed && activePage === path && (
+                <div className="ml-auto">
+                  <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                </div>
+              )}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+
+      {/* Footer/Logout Section */}
+      <div className="p-4 border-t border-gray-200">
+                <button
+                    onClick={handleLogout}
+                    className={`
+                        w-full group relative overflow-hidden rounded-xl
+                        ${isCollapsed ? 'p-3 justify-center' : 'px-4 py-3'}
+                        bg-gradient-to-r from-red-500 to-pink-500
+                        hover:from-red-600 hover:to-pink-600
+                        transition-all duration-200
+                        focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+                    `}
+                >
+                    <div className="relative z-10 flex items-center gap-3 text-white">
+                        <svg 
+                            className="w-5 h-5" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth="2" 
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                        </svg>
+                        {!isCollapsed && (
+                            <span className="text-sm font-medium">Logout</span>
+                        )}
+                    </div>
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                </button>
+            </div>
+    </div>
+  );
+};
+
+export default Sidebar;
+

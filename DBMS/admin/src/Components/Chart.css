@@ -1,0 +1,19 @@
+.button-container{
+    width:15%;
+    padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.container{
+    padding:10px;
+}
+.room-grid{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+.maincont{
+  display:flex;
+  gap:20px;
+}

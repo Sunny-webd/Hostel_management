@@ -1,0 +1,20 @@
+.newh{
+    display:flex;
+    flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:20px;
+padding:20px;
+}
+.hinfo{
+    display:flex;
+    flex-direction:column;
+    gap:20px
+}
+.terms{
+  gap:100px;
+}
+.floors{
+    display:flex;
+    flex-direction:column;
+}
